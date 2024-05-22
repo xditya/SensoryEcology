@@ -1,4 +1,4 @@
-#define ROOM_TEMP 32
+#define ROOM_TEMP 29
 
 #include <Arduino.h>
 
@@ -8,7 +8,7 @@ hp_BH1750 BH1750;
 
 // temperature sensor
 #include <DHT11.h>
-DHT11 dht11(12); // pin 12 for temperature sensor
+DHT11 dht11(12); // pin 12 for temperature sensor 
 
 void setup()
 {
@@ -18,7 +18,7 @@ void setup()
   bool avail = BH1750.begin(BH1750_TO_GROUND);
   if (!avail) {
     Serial.println("No BH1750 sensor found!");
-    while (true) {};                                        
+    while (true) {};
   }
 
   // led initialize
@@ -26,14 +26,12 @@ void setup()
   for (i=0; i<=7; i++)
     pinMode(i, OUTPUT);
 
-  // next: #TODO
+  // relay - temperature
   pinMode(13, OUTPUT);
 }
 
 void loop()
 {
-  digitalWrite(13, HIGH);
-
   // light sensor
   BH1750.start();
   float lux = BH1750.getLux();
@@ -78,10 +76,16 @@ void loop()
 
   // temperature sensor
   int temperature = dht11.readTemperature();
+  Serial.println(temperature);
   if (temperature != DHT11::ERROR_CHECKSUM && temperature != DHT11::ERROR_TIMEOUT) {
-        if (temperature != ROOM_TEMP) {
+        if ((temperature - ROOM_TEMP) > 2) {
           Serial.print("Temperature changed to ");
           Serial.println(temperature);
+          digitalWrite(13, HIGH);
+        }
+        else {
+          Serial.println("LOW");
+          digitalWrite(13, LOW);
         }
     } else {
         Serial.println(DHT11::getErrorString(temperature));
