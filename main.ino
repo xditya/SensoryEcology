@@ -1,9 +1,14 @@
+#define ROOM_TEMP 32
+
 #include <Arduino.h>
 
 // light sensor
 #include <hp_BH1750.h>
 hp_BH1750 BH1750;
 
+// temperature sensor
+#include <DHT11.h>
+DHT11 dht11(12); // pin 12 for temperature sensor
 
 void setup()
 {
@@ -17,87 +22,68 @@ void setup()
   }
 
   // led initialize
-  pinMode(0, OUTPUT);
-  pinMode(1, OUTPUT);
-  pinMode(2, OUTPUT);
-  pinMode(3, OUTPUT);
-  pinMode(4, OUTPUT);
-  pinMode(5, OUTPUT);
-  pinMode(6, OUTPUT);
-  pinMode(7, OUTPUT);
-
+  int i;
+  for (i=0; i<=7; i++)
+    pinMode(i, OUTPUT);
 
   // next: #TODO
+  pinMode(13, OUTPUT);
 }
 
 void loop()
 {
+  digitalWrite(13, HIGH);
+
   // light sensor
   BH1750.start();
   float lux = BH1750.getLux();
+  Serial.print("Light Intensity: ");
   Serial.println(lux);
-  
+  int i;
+
   if (lux > 1000) {
-    digitalWrite(0, LOW);
-    digitalWrite(1, LOW);
-    digitalWrite(2, LOW);
-    digitalWrite(3, LOW);
-    digitalWrite(4, LOW);
-    digitalWrite(5, LOW);
-    digitalWrite(6, LOW);
+    for (i=0; i<=6; i++)
+      digitalWrite(i, LOW);
     digitalWrite(7, HIGH);
   }
   else if (lux > 500) {
-    digitalWrite(0, LOW);
-    digitalWrite(1, LOW);
-    digitalWrite(2, LOW);
-    digitalWrite(3, LOW);
-    digitalWrite(4, LOW);
-    digitalWrite(5, LOW);
-    digitalWrite(6, HIGH);
-    digitalWrite(7, HIGH);
+    for (i=0; i<=5; i++)
+      digitalWrite(i, LOW);
+    for (i=6; i<=7; i++)
+      digitalWrite(i, HIGH);
   }
   else if (lux > 100) {
-    digitalWrite(0, LOW);
-    digitalWrite(1, LOW);
-    digitalWrite(2, LOW);
-    digitalWrite(3, LOW);
-    digitalWrite(4, LOW);
-    digitalWrite(5, HIGH);
-    digitalWrite(6, HIGH);
-    digitalWrite(7, HIGH);
+    for (i=0; i<=4; i++)
+      digitalWrite(i, LOW);
+    for (i=5; i<=7; i++)
+      digitalWrite(i, HIGH);
   }
   else if (lux > 50) {
-    digitalWrite(0, LOW);
-    digitalWrite(1, LOW);
-    digitalWrite(2, LOW);
-    digitalWrite(3, LOW);
-    digitalWrite(4, HIGH);
-    digitalWrite(5, HIGH);
-    digitalWrite(6, HIGH);
-    digitalWrite(7, HIGH);
+    for (i=0; i<=3; i++)
+      digitalWrite(i, LOW);
+    for (i=4; i<=7; i++)
+      digitalWrite(i, HIGH);
   }
   else if (lux > 20) {
-    digitalWrite(0, LOW);
-    digitalWrite(1, LOW);
-    digitalWrite(2, LOW);
-    digitalWrite(3, HIGH);
-    digitalWrite(4, HIGH);
-    digitalWrite(5, HIGH);
-    digitalWrite(6, HIGH);
-    digitalWrite(7, HIGH);
+    for (i=0; i<=2; i++)
+      digitalWrite(i, LOW);
+    for (i=3; i<=7; i++)
+      digitalWrite(i, HIGH);
   }
   else {
     digitalWrite(0, HIGH);
-    digitalWrite(1, HIGH);
-    digitalWrite(2, HIGH);
-    digitalWrite(3, HIGH);
-    digitalWrite(4, HIGH);
-    digitalWrite(5, HIGH);
-    digitalWrite(6, HIGH);
-    digitalWrite(7, HIGH);
+    for (i=1; i<=7; i++)
+      digitalWrite(i, HIGH);
   }
 
-  // next: #TODO
-
+  // temperature sensor
+  int temperature = dht11.readTemperature();
+  if (temperature != DHT11::ERROR_CHECKSUM && temperature != DHT11::ERROR_TIMEOUT) {
+        if (temperature != ROOM_TEMP) {
+          Serial.print("Temperature changed to ");
+          Serial.println(temperature);
+        }
+    } else {
+        Serial.println(DHT11::getErrorString(temperature));
+    }
 }
