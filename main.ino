@@ -1,4 +1,5 @@
-#define ROOM_TEMP 29
+#define ROOM_TEMP 32
+#define PIN_MQ135 A0
 
 #include <Arduino.h>
 
@@ -9,6 +10,10 @@ hp_BH1750 BH1750;
 // temperature sensor
 #include <DHT11.h>
 DHT11 dht11(12); // pin 12 for temperature sensor 
+
+// gas detector
+#include <MQ135.h>
+MQ135 mq135_sensor(PIN_MQ135);
 
 void setup()
 {
@@ -78,16 +83,27 @@ void loop()
   int temperature = dht11.readTemperature();
   Serial.println(temperature);
   if (temperature != DHT11::ERROR_CHECKSUM && temperature != DHT11::ERROR_TIMEOUT) {
-        if ((temperature - ROOM_TEMP) > 2) {
+        if ((temperature - ROOM_TEMP) >= 1) {
           Serial.print("Temperature changed to ");
           Serial.println(temperature);
           digitalWrite(13, HIGH);
         }
         else {
-          Serial.println("LOW");
           digitalWrite(13, LOW);
         }
     } else {
         Serial.println(DHT11::getErrorString(temperature));
+    }
+
+    // gas detector
+    float ppm = mq135_sensor.getPPM();
+    Serial.print("Air Quality: ");
+    Serial.print(ppm);
+    Serial.println("ppm");
+    if (ppm > 100) {
+      digitalWrite(13, HIGH);
+    }
+    else {
+      digitalWrite(13, LOW);
     }
 }
