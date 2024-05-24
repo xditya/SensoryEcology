@@ -28,7 +28,7 @@ void setup()
 
   // led initialize
   int i;
-  for (i=0; i<=7; i++)
+  for (i=3; i<=10; i++)
     pinMode(i, OUTPUT);
 
   // relay - temperature
@@ -45,37 +45,37 @@ void loop()
   int i;
 
   if (lux > 1000) {
-    for (i=0; i<=6; i++)
+    for (i=3; i<=9; i++)
       digitalWrite(i, LOW);
-    digitalWrite(7, HIGH);
+    digitalWrite(10, HIGH);
   }
   else if (lux > 500) {
-    for (i=0; i<=5; i++)
+    for (i=3; i<=8; i++)
       digitalWrite(i, LOW);
-    for (i=6; i<=7; i++)
+    for (i=9; i<=10; i++)
       digitalWrite(i, HIGH);
   }
   else if (lux > 100) {
-    for (i=0; i<=4; i++)
+    for (i=3; i<=7; i++)
       digitalWrite(i, LOW);
-    for (i=5; i<=7; i++)
+    for (i=8; i<=10; i++)
       digitalWrite(i, HIGH);
   }
   else if (lux > 50) {
-    for (i=0; i<=3; i++)
+    for (i=3; i<=6; i++)
       digitalWrite(i, LOW);
-    for (i=4; i<=7; i++)
+    for (i=7; i<=10; i++)
       digitalWrite(i, HIGH);
   }
   else if (lux > 20) {
-    for (i=0; i<=2; i++)
+    for (i=3; i<=5; i++)
       digitalWrite(i, LOW);
-    for (i=3; i<=7; i++)
+    for (i=6; i<=10; i++)
       digitalWrite(i, HIGH);
   }
   else {
     digitalWrite(0, HIGH);
-    for (i=1; i<=7; i++)
+    for (i=4; i<=10; i++)
       digitalWrite(i, HIGH);
   }
 
